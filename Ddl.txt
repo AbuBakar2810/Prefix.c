@@ -1,0 +1,135 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int info;
+    struct node *llink;
+    struct node *rlink;
+};
+
+typedef struct node* NODE;
+
+// Function to allocate a new node
+NODE getnode() {
+    NODE x = (NODE) malloc(sizeof(struct node));
+    if (x == NULL) {
+        printf("Out of memory\n");
+        exit(0);
+    }
+    return x;
+}
+
+// Function to insert a node at the front of the doubly linked list
+NODE insert_front(int item, NODE first) {
+    NODE temp = getnode();
+    temp->info = item;
+    temp->llink = NULL;
+    temp->rlink = first;
+    if (first != NULL) 
+        first->llink = temp;
+    return temp;
+}
+
+// Function to insert a node at the end of the doubly linked list
+NODE insert_end(int item, NODE first) {
+    NODE temp = getnode();
+    temp->info = item;
+    temp->rlink = NULL;
+    if (first == NULL) {
+        temp->llink = NULL;
+        return temp;
+    }
+    NODE cur = first;
+    while (cur->rlink != NULL) 
+        cur = cur->rlink;
+    cur->rlink = temp;
+    temp->llink = cur;
+    return first;
+}
+
+// Function to delete the front node of the doubly linked list
+NODE delete_front(NODE first) {
+    if (first == NULL) {
+        printf("List is empty, cannot delete\n");
+        return NULL;
+    }
+    NODE temp = first;
+    first = first->rlink;
+    if (first != NULL) 
+        first->llink = NULL;
+    printf("Item deleted = %d\n", temp->info);
+    free(temp);
+    return first;
+}
+
+// Function to delete the last node of the doubly linked list
+NODE delete_end(NODE first) {
+    if (first == NULL) {
+        printf("List is empty, cannot delete\n");
+        return NULL;
+    }
+    NODE cur = first;
+    if (cur->rlink == NULL) {
+        printf("Item deleted = %d\n", cur->info);
+        free(cur);
+        return NULL;
+    }
+    while (cur->rlink != NULL) 
+        cur = cur->rlink;
+    printf("Item deleted = %d\n", cur->info);
+    cur->llink->rlink = NULL;
+    free(cur);
+    return first;
+}
+
+// Function to display the contents of the doubly linked list
+void display(NODE first) {
+    if (first == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    printf("The contents of the doubly linked list are: ");
+    NODE cur = first;
+    while (cur != NULL) {
+        printf("%d ", cur->info);
+        cur = cur->rlink;
+    }
+    printf("\n");
+}
+
+// Main function
+int main() {
+    NODE first = NULL;
+    int choice, item;
+    while (1) {
+        printf("\n1: Insert Front\n2: Insert End\n3: Delete Front\n4: Delete End\n5: Display\n6: Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter the item to be inserted at the front: ");
+                scanf("%d", &item);
+                first = insert_front(item, first);
+                break;
+            case 2:
+                printf("Enter the item to be inserted at the end: ");
+                scanf("%d", &item);
+                first = insert_end(item, first);
+                break;
+            case 3:
+                first = delete_front(first);
+                break;
+            case 4:
+                first = delete_end(first);
+                break;
+            case 5:
+                display(first);
+                break;
+            case 6:
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
